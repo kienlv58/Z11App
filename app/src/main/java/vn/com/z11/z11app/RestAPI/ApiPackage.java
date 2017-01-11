@@ -10,7 +10,7 @@ import vn.com.z11.z11app.ApiResponseModel.PackageResponse;
  * Created by kienlv58 on 12/23/16.
  */
 public interface ApiPackage {
-    @GET("packages/{package_id}")
+    @GET("package/{package_id}")
     Call<PackageResponse> getOnepackage(@Path("package_id")int package_id);
     @GET("lession")
     Call<ListPackageResponse> getLession();

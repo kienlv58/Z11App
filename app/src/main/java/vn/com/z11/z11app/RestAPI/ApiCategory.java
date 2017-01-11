@@ -21,7 +21,7 @@ public interface ApiCategory {
 //    @Header – specifies the header with the value of the annotated parameter
 
 
-    @GET("categories/{id}")
+    @GET("category/{id}")
     Call<CategoryResponse> getCategory(@Path("id")int id);
     @GET("categories/{take}/{skip}")
     Call<CategoryResponse> getAllCategory(@Path("take")int take,@Path("skip") int skip);

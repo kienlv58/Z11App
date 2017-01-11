@@ -8,6 +8,7 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity
     TextView txtv_email;
     ImageView img_login_out;
     MenuItem item1;
+    SearchView searchView;
 
     TabLayout tabLayout;
     ViewPager viewPager;
@@ -159,6 +161,20 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+//        MenuItem itemSearch = menu.findItem(R.id.search_view);
+//        searchView = (SearchView) itemSearch.getActionView();
+//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//                Toast.makeText(MainActivity.this,query,Toast.LENGTH_SHORT).show();
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//                return false;
+//            }
+//        });
         return true;
     }
 
@@ -174,7 +190,9 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
         if (id == R.id.action_search) {
-            handleMenuSearch();
+           Intent search = new Intent(MainActivity.this,PackageActivity.class);
+            search.putExtra("search",1);
+            startActivity(search);
 
         }
 
@@ -260,6 +278,7 @@ public class MainActivity extends AppCompatActivity
         searchItem = menu.findItem(R.id.action_search);
         return super.onPrepareOptionsMenu(menu);
     }
+
 
     public void handleMenuSearch() {
         ActionBar actionBar = getSupportActionBar();
