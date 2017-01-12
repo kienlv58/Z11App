@@ -1,10 +1,12 @@
 package vn.com.z11.z11app;
 
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -22,7 +24,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -44,7 +52,13 @@ public class GroupQuestionActivity extends AppCompatActivity implements onEventL
     int total_group_qs = 0;
     int total_wrong = 0;
     int a = 0;
+    String from;
     ArrayList<ChapterResponse.GroupQS> listGroupQS;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,12 +76,16 @@ public class GroupQuestionActivity extends AppCompatActivity implements onEventL
         getSupportActionBar().setHomeAsUpIndicator(upArrow);
         initView();
 
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     public void initView() {
         loading = (RelativeLayout) findViewById(R.id.rl_loading);
         loading.setVisibility(View.VISIBLE);
         Intent groupdata = getIntent();
+        from = groupdata.getStringExtra("from");
         chapter_id = groupdata.getIntExtra("chapter_id", 0);
         progressBar = (ProgressBar) findViewById(R.id.progessbar);
         txtv_progess = (TextView) findViewById(R.id.txtv_progess);
@@ -91,6 +109,7 @@ public class GroupQuestionActivity extends AppCompatActivity implements onEventL
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         Bundle bundle = new Bundle();
         bundle.putSerializable("question", groupQS);
+        bundle.putString("from", from);
         fragment.setArguments(bundle);
         transaction.replace(R.id.fmcontent, fragment);
         //transaction.addToBackStack(null);
@@ -99,43 +118,63 @@ public class GroupQuestionActivity extends AppCompatActivity implements onEventL
 
     @Override
     public void onBackPressed() {
-        LayoutInflater inflater = getLayoutInflater();
-        View v = inflater.inflate(R.layout.dialog_layout, null);
-        ProgressBar complete = (ProgressBar) v.findViewById(R.id.progessbar);
-        TextView txtv_complete = (TextView) v.findViewById(R.id.txtv_progess);
-        TextView txtv_total_qs = (TextView) v.findViewById(R.id.txtv_total_qs);
-        TextView txtv_total_wrong = (TextView) v.findViewById(R.id.txtv_total_wrong);
-        TextView txtv_review = (TextView) v.findViewById(R.id.txtv_review);
-        complete.setMax(100);
-        complete.setProgress(a);
-        txtv_complete.setText(a + "%");
-        txtv_total_qs.setText("Tong so cau hoi :" + total_group_qs);
-        txtv_total_wrong.setText("So lan tra loi sai: " + total_wrong);
+        if (from.equals("train")) {
+            LayoutInflater inflater = getLayoutInflater();
+            View v = inflater.inflate(R.layout.dialog_layout, null);
+            ProgressBar complete = (ProgressBar) v.findViewById(R.id.progessbar);
+            TextView txtv_complete = (TextView) v.findViewById(R.id.txtv_progess);
+            TextView txtv_total_qs = (TextView) v.findViewById(R.id.txtv_total_qs);
+            TextView txtv_total_wrong = (TextView) v.findViewById(R.id.txtv_total_wrong);
+            TextView txtv_review = (TextView) v.findViewById(R.id.txtv_review);
+            complete.setMax(100);
+            complete.setProgress(a);
+            txtv_complete.setText(a + "%");
+            txtv_total_qs.setText("Tong so cau hoi :" + total_group_qs);
+            txtv_total_wrong.setText("So lan tra loi sai: " + total_wrong);
 
-        txtv_review.setText("Danh gia :" + "Chua hoan thanh cac cau hoi");
+            txtv_review.setText("Danh gia :" + "Chua hoan thanh cac cau hoi");
 
 
-        AlertDialog.Builder customDialog = new AlertDialog.Builder(this);
-        customDialog.setView(getLayoutInflater().inflate(R.layout.dialog_layout, null));
-        customDialog.setPositiveButton("Tiep tuc", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
-        customDialog.setNegativeButton("Thoat", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
+            AlertDialog.Builder customDialog = new AlertDialog.Builder(this);
+            customDialog.setView(getLayoutInflater().inflate(R.layout.dialog_layout, null));
+            customDialog.setPositiveButton("Tiep tuc", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            });
+            customDialog.setNegativeButton("Thoat", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
 
-                finish();
-                overridePendingTransition(R.anim.fade_in_left, R.anim.fade_out_left);
-            }
-        });
-        customDialog.setCancelable(false);
-        customDialog.setView(v);
-        AlertDialog alertDialog = customDialog.create();
-        alertDialog.show();
-        overridePendingTransition(R.anim.fade_in_left, R.anim.fade_out_left);
+                    finish();
+                    overridePendingTransition(R.anim.fade_in_left, R.anim.fade_out_left);
+                }
+            });
+            customDialog.setCancelable(false);
+            customDialog.setView(v);
+            AlertDialog alertDialog = customDialog.create();
+            alertDialog.show();
+            overridePendingTransition(R.anim.fade_in_left, R.anim.fade_out_left);
+        } else {
+            AlertDialog.Builder exit = new AlertDialog.Builder(GroupQuestionActivity.this);
+            exit.setMessage("Bạn chưa hoàn thành bài test. Bài sẽ không được lưu khi bạn thoát ?");
+            exit.setNegativeButton("Có", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    finish();
+                }
+            });
+            exit.setPositiveButton("Không", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            });
+
+            AlertDialog dialog = exit.create();
+            dialog.show();
+        }
     }
 
     @Override
@@ -185,7 +224,7 @@ public class GroupQuestionActivity extends AppCompatActivity implements onEventL
     }
 
     @Override
-    public void eventNext(int next) {
+    public void eventCheck(int next) {
         total_wrong += next;
         qs_pos++;
         a = (qs_pos * 100) / total_group_qs;
@@ -194,58 +233,137 @@ public class GroupQuestionActivity extends AppCompatActivity implements onEventL
             txtv_progess.setText(a + "%");
             callFragment(new QuestionFragment(), listGroupQS.get(qs_pos));
         } else {
-            Toast.makeText(GroupQuestionActivity.this, "ban da hoan thanh tat ca cac cau hoi", Toast.LENGTH_SHORT).show();
-            progressBar.setProgress(a);
-            txtv_progess.setText(a + "%");
 
-            LayoutInflater inflater = getLayoutInflater();
-            View v = inflater.inflate(R.layout.dialog_layout, null);
-            ProgressBar complete = (ProgressBar) v.findViewById(R.id.progessbar);
-            TextView txtv_complete = (TextView) v.findViewById(R.id.txtv_progess);
-            TextView txtv_total_qs = (TextView) v.findViewById(R.id.txtv_total_qs);
-            TextView txtv_total_wrong = (TextView) v.findViewById(R.id.txtv_total_wrong);
-            TextView txtv_review = (TextView) v.findViewById(R.id.txtv_review);
-            complete.setMax(100);
-            complete.setProgress(a);
-            txtv_complete.setText(a + "%");
-            txtv_total_qs.setText("Tong so cau hoi :" + total_group_qs);
-            txtv_total_wrong.setText("So lan tra loi sai: " + total_wrong);
-            if (total_wrong == 0)
-                txtv_review.setText("Danh gia :" + "Rat Tot");
-            else if (total_wrong <= total_group_qs)
-                txtv_review.setText("Danh gia :" + "Tot");
-            else if (total_wrong > total_group_qs) {
-                txtv_review.setText("Danh gia :" + "Kem");
+            if (from == "train") {
+                Toast.makeText(GroupQuestionActivity.this, "ban da hoan thanh tat ca cac cau hoi", Toast.LENGTH_SHORT).show();
+                progressBar.setProgress(a);
+                txtv_progess.setText(a + "%");
+
+                LayoutInflater inflater = getLayoutInflater();
+                View v = inflater.inflate(R.layout.dialog_layout, null);
+                ProgressBar complete = (ProgressBar) v.findViewById(R.id.progessbar);
+                TextView txtv_complete = (TextView) v.findViewById(R.id.txtv_progess);
+                TextView txtv_total_qs = (TextView) v.findViewById(R.id.txtv_total_qs);
+                TextView txtv_total_wrong = (TextView) v.findViewById(R.id.txtv_total_wrong);
+                TextView txtv_review = (TextView) v.findViewById(R.id.txtv_review);
+                complete.setMax(100);
+                complete.setProgress(a);
+                txtv_complete.setText(a + "%");
+                txtv_total_qs.setText("Tong so cau hoi :" + total_group_qs);
+                txtv_total_wrong.setText("So lan tra loi sai: " + total_wrong);
+                if (total_wrong == 0)
+                    txtv_review.setText("Danh gia :" + "Rat Tot");
+                else if (total_wrong <= total_group_qs)
+                    txtv_review.setText("Danh gia :" + "Tot");
+                else if (total_wrong > total_group_qs) {
+                    txtv_review.setText("Danh gia :" + "Kem");
+                }
+
+                AlertDialog.Builder customDialog = new AlertDialog.Builder(this);
+                customDialog.setView(getLayoutInflater().inflate(R.layout.dialog_layout, null));
+                customDialog.setPositiveButton("Chapter tiep", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                });
+                customDialog.setNegativeButton("Tra loi lai", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        Intent intent = getIntent();
+                        overridePendingTransition(0, 0);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        finish();
+                        overridePendingTransition(0, 0);
+                        startActivity(intent);
+                    }
+                });
+                customDialog.setCancelable(false);
+                customDialog.setView(v);
+                AlertDialog alertDialog = customDialog.create();
+                alertDialog.show();
+
+
+            } else {
+                //from == test
+
+                AlertDialog.Builder exit = new AlertDialog.Builder(GroupQuestionActivity.this);
+                exit.setMessage("Bạn đã hoàn thành bài test. Submit?");
+                exit.setNegativeButton("Có", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                });
+                exit.setPositiveButton("Không", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+
+                AlertDialog dialog = exit.create();
+                dialog.show();
+
             }
-
-            AlertDialog.Builder customDialog = new AlertDialog.Builder(this);
-            customDialog.setView(getLayoutInflater().inflate(R.layout.dialog_layout, null));
-            customDialog.setPositiveButton("Chapter tiep", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    finish();
-                }
-            });
-            customDialog.setNegativeButton("Tra loi lai", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-
-                    Intent intent = getIntent();
-                    overridePendingTransition(0, 0);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                    finish();
-                    overridePendingTransition(0, 0);
-                    startActivity(intent);
-                }
-            });
-            customDialog.setCancelable(false);
-            customDialog.setView(v);
-            AlertDialog alertDialog = customDialog.create();
-            alertDialog.show();
-
-
         }
 
     }
 
+    @Override
+    public void eventNext(ArrayList<HashMap<Integer, HashMap<Integer, Boolean>>> user_answer) {
+        for (int i = 0; i < user_answer.size(); i++) {
+            HashMap<Integer, HashMap<Integer, Boolean>> item = user_answer.get(i);
+            Map.Entry<Integer, HashMap<Integer, Boolean>> entry1 = item.entrySet().iterator().next();
+            int id_qs = entry1.getKey();
+            HashMap<Integer, Boolean> answer = entry1.getValue();
+            Map.Entry<Integer, Boolean> entry2 = answer.entrySet().iterator().next();
+            int item_answer = entry2.getKey();
+            Boolean answer_iscrrect = entry2.getValue();
+            Toast.makeText(this, "qs:" + id_qs + "-----" + "item_answer" + item_answer + "-----correct" + answer_iscrrect, Toast.LENGTH_SHORT).show();
+        }
+
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "GroupQuestion Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://vn.com.z11.z11app/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "GroupQuestion Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://vn.com.z11.z11app/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        client.disconnect();
+    }
 }

@@ -16,10 +16,12 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import retrofit2.Call;
 import vn.com.z11.z11app.ApiResponseModel.CategoryResponse;
 import vn.com.z11.z11app.ApiResponseModel.ListPackageResponse;
 import vn.com.z11.z11app.ChapterActibity;
 import vn.com.z11.z11app.R;
+import vn.com.z11.z11app.RestAPI.ApiUserAnswer;
 
 /**
  * Created by kienlv58 on 12/6/16.
@@ -56,7 +58,25 @@ public class PackageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             myHolder.btn_unlock.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(context, "Ban muon mua package nay", Toast.LENGTH_SHORT).show();
+                    AlertDialog.Builder exit = new AlertDialog.Builder(context);
+                    exit.setMessage("Bạn muốn mua package này với "+itemPackage.package_cost + " xu ?");
+                    exit.setNegativeButton("Có", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            //send payment to server
+                            ApiUserAnswer apiUserAnswer = RestAdapter.getClient().create(ApiUserAnswer.class);
+                        }
+                    });
+                    exit.setPositiveButton("Không", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+                    exit.setCancelable(false);
+
+                    AlertDialog dialog = exit.create();
+                    dialog.show();
                 }
             });
             myHolder.itemView.setOnClickListener(new View.OnClickListener() {

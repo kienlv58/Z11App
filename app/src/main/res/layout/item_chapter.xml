@@ -46,6 +46,25 @@
                 android:textSize="15sp"
 
                 android:textStyle="bold" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_below="@+id/txtv_description"
+                android:layout_height="wrap_content">
+                <Button
+                    android:layout_width="0dp"
+                    android:id="@+id/btn_train"
+                    android:text="Train"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    />
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btn_test"
+                    android:text="Test"
+                    android:layout_weight="1"
+                    />
+            </LinearLayout>
 
         </RelativeLayout>
 

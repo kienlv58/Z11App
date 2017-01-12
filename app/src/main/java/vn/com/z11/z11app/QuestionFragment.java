@@ -26,20 +26,24 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import vn.com.z11.z11app.ApiResponseModel.ChapterResponse;
 import vn.com.z11.z11app.RestAPI.onEventListenter;
 
 
 public class QuestionFragment extends Fragment implements View.OnClickListener {
+    LinearLayout layout_test,layout_train;
     onEventListenter eventNext;
     RelativeLayout loading;
     TextView txtv_questionContent, txtv_questionTranscript;
     ImageView img_question, img_audio, img_translate, img_check;
+    ImageView img_previos,img_next;
     SeekBar seekBar;
     RadioGroup radioGroup;
     LinearLayout layout_radio;
     ChapterResponse.GroupQS groupquestion;
+    String from;
     float dX;
     float dY;
     int lastAction;
@@ -48,6 +52,8 @@ public class QuestionFragment extends Fragment implements View.OnClickListener {
     boolean played = false;
     HashMap<Integer, Integer> itemCorrect = new HashMap<>();
     HashMap<Integer, Integer> colorChange = new HashMap<>();
+    HashMap<Integer,HashMap<Integer,Boolean>> saveRadio_Answer = new HashMap<>();
+    ArrayList<HashMap<Integer,HashMap<Integer,Boolean>>> useraswer = new ArrayList<>();
     ArrayList<RadioGroup> listRDG = new ArrayList<>();
     ArrayList<TextView> listTextTitle = new ArrayList<>();
     int totol_wrong = 0;
@@ -74,6 +80,7 @@ public class QuestionFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         groupquestion = (ChapterResponse.GroupQS) getArguments().getSerializable("question");
+        from = getArguments().getString("from");
 
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_question, container, false);
@@ -85,8 +92,23 @@ public class QuestionFragment extends Fragment implements View.OnClickListener {
         img_audio = (ImageView) root.findViewById(R.id.img_play_stop);
         img_translate = (ImageView) root.findViewById(R.id.img_translate);
         img_check = (ImageView) root.findViewById(R.id.img_check);
+        img_previos = (ImageView)root.findViewById(R.id.img_previos);
+        img_next = (ImageView)root.findViewById(R.id.img_next);
         radioGroup = (RadioGroup) root.findViewById(R.id.group_answer);
         layout_radio = (LinearLayout) root.findViewById(R.id.layout_radio);
+        layout_train = (LinearLayout)root.findViewById(R.id.layout_train);
+        layout_test = (LinearLayout)root.findViewById(R.id.layout_test);
+        if(from.equals("train")){
+            layout_test.setVisibility(View.GONE);
+            layout_train.setVisibility(View.VISIBLE);
+            img_translate.setOnClickListener(this);
+            img_check.setOnClickListener(this);
+        }else if(from.equals("test")){
+            layout_test.setVisibility(View.VISIBLE);
+            layout_train.setVisibility(View.GONE);
+            img_next.setOnClickListener(this);
+            img_previos.setOnClickListener(this);
+        }
 
         return root;
     }
@@ -113,40 +135,9 @@ public class QuestionFragment extends Fragment implements View.OnClickListener {
             img_audio.setVisibility(View.GONE);
             seekBar.setVisibility(View.GONE);
         }
-        img_check.setImageResource(R.drawable.check_icon);
-        img_translate.setImageResource(R.drawable.translate_icon);
         img_audio.setOnClickListener(this);
-        img_translate.setOnClickListener(this);
-        img_check.setOnClickListener(this);
-//        fab.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View view, MotionEvent event) {
-//                switch (event.getActionMasked()) {
-//                    case MotionEvent.ACTION_DOWN:
-//                        dX = view.getX() - event.getRawX();
-//                        dY = view.getY() - event.getRawY();
-//                        lastAction = MotionEvent.ACTION_DOWN;
-//                        break;
-//
-//                    case MotionEvent.ACTION_MOVE:
-////
-//                        view.setY(event.getRawY() + dY);
-//                        view.setX(event.getRawX() + dX);
-//                        lastAction = MotionEvent.ACTION_MOVE;
-//                        break;
-//
-//                    case MotionEvent.ACTION_UP:
-//                        if (lastAction == MotionEvent.ACTION_DOWN)
-//                            Toast.makeText(getContext(), "Clicked!", Toast.LENGTH_SHORT).show();
-//                        break;
-//
-//                    default:
-//                        return false;
-//                }
-//                return true;
-//
-//            }
-//        });
+
+
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
@@ -172,6 +163,11 @@ public class QuestionFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.img_translate:
                 Toast.makeText(getContext(), "click translate", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.img_next:
+                getAnswer();
+                break;
+            case R.id.img_previos:
                 break;
             case R.id.img_play_stop:
                 if (played == false) {
@@ -231,6 +227,49 @@ public class QuestionFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    public void getAnswer(){
+        for (int i = 0; i < listRDG.size(); i++) {
+            int id = listRDG.get(i).getId();
+            //on check change color change
+
+            Integer selectItem;
+            try {
+                selectItem = listRDG.get(i).getCheckedRadioButtonId();
+            } catch (Exception e) {
+                Toast.makeText(getContext(), "ban chua chon het cau tra loi", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (selectItem == -1) {
+                Toast.makeText(getContext(), "ban chua chon het cau tra loi", Toast.LENGTH_SHORT).show();
+                return;
+            } else {
+                HashMap<Integer,Boolean> a = saveRadio_Answer.get(selectItem);
+                Map.Entry<Integer, Boolean> entry = a.entrySet().iterator().next();
+                int id_answer = entry.getKey();
+
+                for(int j = 0; j < groupquestion.questions.size();j++){
+                    for(int k = 0; k < groupquestion.questions.get(j).answers.size();k++){
+                        if( id_answer == groupquestion.questions.get(j).answers.get(k).answer_item_id){
+                            HashMap<Integer,HashMap<Integer,Boolean>> data = new HashMap<>();
+                            data.put(groupquestion.questions.get(j).question_id,a);
+                            useraswer.add(data);
+                        }
+                    }
+
+                }
+
+
+            }
+            if (!selectItem.equals(itemCorrect.get(listRDG.get(i).getId()))) {
+                totol_wrong++;
+            }
+        }
+
+        eventNext.eventNext(useraswer);
+        eventNext.eventCheck(totol_wrong);
+    }
+
+
     public void setAnswer() {
         int count_qs = groupquestion.questions.size();
 
@@ -249,17 +288,31 @@ public class QuestionFragment extends Fragment implements View.OnClickListener {
             listTextTitle.get(i).setText(groupquestion.questions.get(i).sub_question_content);
             listRDG.get(i).addView(listTextTitle.get(i), rprms);
             int count_answer = groupquestion.questions.get(i).answers.size();
+            //save with question id how many answer item
+
             for (int j = 0; j < count_answer; j++) {
                 RadioButton radioButton = new RadioButton(getContext());
                 radioButton.setText(groupquestion.questions.get(i).answers.get(j).answer_item_value);
                 radioButton.setId(numID + j);
-                if (groupquestion.questions.get(i).answers.get(j).answer_is_correct == 1)
+                //key = radio_id ,value = answer_item
+                HashMap<Integer,Boolean> answer = new HashMap<>();
+
+
+                Boolean iscorrect = false;
+                if (groupquestion.questions.get(i).answers.get(j).answer_is_correct == 1){
                     itemCorrect.put(listRDG.get(i).getId(), numID + j);
+                    iscorrect = true;
+                }
+
+                answer.put(groupquestion.questions.get(i).answers.get(j).answer_item_id,iscorrect);
+                saveRadio_Answer.put(numID+j,answer);
 
                 listRDG.get(i).addView(radioButton, rprms);
             }
+
             numID += 100;
         }
+        loading.setVisibility(View.GONE);
     }
 
     public void checkAnswer() {
@@ -300,7 +353,7 @@ public class QuestionFragment extends Fragment implements View.OnClickListener {
             colorChange.put(listRDG.get(i).getId(), selectItem);
         }
         if (correct_all) {
-            eventNext.eventNext(totol_wrong);
+            eventNext.eventCheck(totol_wrong);
         } else {
             Toast.makeText(getContext(), "ban tra loi sai", Toast.LENGTH_SHORT).show();
         }
