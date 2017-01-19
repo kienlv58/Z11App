@@ -73,7 +73,7 @@ public class RegisterActivity extends AppCompatActivity {
         edt_confirm_pass = (EditText) findViewById(R.id.edt_confirm_pass);
         spinner = (AppCompatSpinner) findViewById(R.id.gender);
         btn_register = (Button) findViewById(R.id.btnRegister);
-        loading = (RelativeLayout)findViewById(R.id.rl_loading);
+        loading = (RelativeLayout) findViewById(R.id.rl_loading);
         loading.setVisibility(View.INVISIBLE);
         final String arr_gender[] = {"Male", "FeMale"};
         gender = "Male";
@@ -108,43 +108,41 @@ public class RegisterActivity extends AppCompatActivity {
 
                         ApiRegister apiRegister = RestAdapter.getClient().create(ApiRegister.class);
                         loading.setVisibility(View.VISIBLE);
-                        Call<RegisterResponse> registerResponseCall = apiRegister.userRegister(username,email,gender,password,confirm_pass);
+                        Call<RegisterResponse> registerResponseCall = apiRegister.userRegister(username, email, gender, password, confirm_pass);
                         registerResponseCall.enqueue(new Callback<RegisterResponse>() {
                             @Override
                             public void onResponse(Call<RegisterResponse> call, Response<RegisterResponse> response) {
                                 loading.setVisibility(View.INVISIBLE);
                                 int code = response.code();
-                                if(code == 200){
+                                if (code == 200) {
                                     RegisterResponse result = response.body();
                                     Intent intent = new Intent();
                                     Bundle bundle = new Bundle();
-                                    bundle.putString("email",email);
-                                    bundle.putString("password",password);
-                                    intent.putExtra("registerResponse",bundle);
-                                    setResult(200,intent);
+                                    bundle.putString("email", email);
+                                    bundle.putString("password", password);
+                                    intent.putExtra("registerResponse", bundle);
+                                    setResult(200, intent);
                                     finish();
                                     overridePendingTransition(R.anim.fade_in_right, R.anim.fade_out_right);
-                                }
-                                else if(code == 400 || code == 404){
+                                } else if (code == 400 || code == 404) {
                                     ErroResponse erroResponse = ErrorUtils.parseError(response);
-                                    Toast.makeText(RegisterActivity.this,erroResponse.getStatus(),Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(RegisterActivity.this, erroResponse.getStatus(), Toast.LENGTH_SHORT).show();
                                 }
                             }
 
                             @Override
                             public void onFailure(Call<RegisterResponse> call, Throwable t) {
                                 loading.setVisibility(View.INVISIBLE);
-                                Toast.makeText(RegisterActivity.this,t.toString(),Toast.LENGTH_SHORT).show();
+                                Toast.makeText(RegisterActivity.this, t.toString(), Toast.LENGTH_SHORT).show();
                             }
                         });
 
 
-
-                    }else {
-                        Toast.makeText(RegisterActivity.this,"password or confirm_pass invalid",Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(RegisterActivity.this, "password or confirm_pass invalid", Toast.LENGTH_SHORT).show();
                     }
-                }else{
-                    Toast.makeText(RegisterActivity.this,"email invalid",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(RegisterActivity.this, "email invalid", Toast.LENGTH_SHORT).show();
                 }
 
 

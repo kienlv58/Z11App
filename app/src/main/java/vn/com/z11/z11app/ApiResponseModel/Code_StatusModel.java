@@ -7,6 +7,7 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Code_StatusModel {
 
+
     @SerializedName("code")
     public int code;
     @SerializedName("status")

@@ -37,6 +37,7 @@ public class LoginActivity extends AppCompatActivity {
     Button btn_login, btn_facebook,btn_google;
     TextView txtv_forgotpass,txtv_register;
     SQLUser sqlUser = new SQLUser(this);
+    String from;
 
 
     @Override
@@ -52,6 +53,7 @@ public class LoginActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(upArrow);
+        from = getIntent().getStringExtra("other");
         initView();
         loginPassword();
         register();
@@ -154,6 +156,12 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        if(from == "other")
+        {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |  Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+        }
         overridePendingTransition(R.anim.fade_in_left, R.anim.fade_out_left);
     }
 

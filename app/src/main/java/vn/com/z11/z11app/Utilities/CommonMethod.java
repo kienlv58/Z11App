@@ -1,6 +1,8 @@
 package vn.com.z11.z11app.Utilities;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
 /**
@@ -19,5 +21,26 @@ public class CommonMethod {
             //Toast.makeText(context, "Invalid email address", Toast.LENGTH_SHORT).show();
             return  false;
         }
+    }
+    public void showdiaglog(Context context,String messsage,String nagative,String possitive){
+        AlertDialog.Builder aBuilder = new AlertDialog.Builder(context);
+        aBuilder.setMessage(messsage);
+        aBuilder.setNegativeButton(nagative, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        if(possitive != null){
+            aBuilder.setPositiveButton(possitive, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            });
+        }
+        aBuilder.setCancelable(false);
+        AlertDialog alertDialog = aBuilder.create();
+        alertDialog.show();
     }
 }

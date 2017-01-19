@@ -214,15 +214,15 @@ public class MainActivity extends AppCompatActivity
                 startActivityForResult(intent, 100);
             }
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_lession) {
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_folder) {
 
         } else if (id == R.id.nav_share) {
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_setting) {
+
+        } else if (id == R.id.nav_logout) {
 
         }
 
@@ -279,58 +279,10 @@ public class MainActivity extends AppCompatActivity
         return super.onPrepareOptionsMenu(menu);
     }
 
-
-    public void handleMenuSearch() {
-        ActionBar actionBar = getSupportActionBar();
-        if (isSearchOpend) {
-            actionBar.setDisplayShowCustomEnabled(false); //disable a custom view inside the actionbar
-            actionBar.setDisplayShowTitleEnabled(true); //show the title in the action bar
-
-            //hides the keyboard
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(edt_search.getWindowToken(), 0);
-            //add the search icon in the action bar
-            searchItem.setIcon(getResources().getDrawable(R.drawable.icon_search));
-
-            isSearchOpend = false;
-        } else {
-            actionBar.setDisplayShowCustomEnabled(true); //enable it to display a
-            // custom view in the action bar.
-            actionBar.setCustomView(R.layout.search_bar);//add the custom view
-            actionBar.setDisplayShowTitleEnabled(false); //hide the title
-
-            edt_search = (EditText) actionBar.getCustomView().findViewById(R.id.edtSearch); //the text editor
-
-            //this is a listener to do a search when the user clicks on search button
-            edt_search.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-
-
-                @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                        doSearch();
-                        return true;
-                    }
-                    return false;
-                }
-            });
-
-
-            edt_search.requestFocus();
-
-            //open the keyboard focused in the edtSearch
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(edt_search, InputMethodManager.SHOW_IMPLICIT);
-
-
-            //add the close icon
-            actionBar.setIcon(getResources().getDrawable(R.drawable.ic_close));
-
-            isSearchOpend = true;
-        }
-    }
-
-    public void doSearch() {
-        Toast.makeText(MainActivity.this, "hello", Toast.LENGTH_LONG).show();
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        RestAdapter.MyauthHeaderContent = null;
     }
 }
+

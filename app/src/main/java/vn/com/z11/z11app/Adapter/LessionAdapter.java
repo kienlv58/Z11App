@@ -4,17 +4,13 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,7 +18,6 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.zip.Inflater;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
@@ -38,21 +33,17 @@ import vn.com.z11.z11app.ChapterActibity;
 import vn.com.z11.z11app.Database.Query.SQLUser;
 import vn.com.z11.z11app.LoginActivity;
 import vn.com.z11.z11app.MainActivity;
-import vn.com.z11.z11app.PackageActivity;
 import vn.com.z11.z11app.R;
 import vn.com.z11.z11app.RestAPI.ApiLession;
 import vn.com.z11.z11app.RestAPI.ApiPurchases;
 import vn.com.z11.z11app.RestAPI.ApiRate;
-import vn.com.z11.z11app.RestAPI.ApiUserAnswer;
 import vn.com.z11.z11app.RestAPI.ErrorUtils;
 import vn.com.z11.z11app.Utilities.CommonMethod;
 
 /**
- * Created by kienlv58 on 12/6/16.
+ * Created by kienlv58 on 1/19/17.
  */
-public class PackageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
-    ArrayList<CategoryResponse.Packages> listpackage;
+public class LessionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     ArrayList<ListPackageResponse.Packages> listLession;
     Context context;
     LayoutInflater inflater;
@@ -62,8 +53,7 @@ public class PackageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     float mRate;
 
 
-    public PackageAdapter(ArrayList<CategoryResponse.Packages> listpackage, ArrayList<ListPackageResponse.Packages> listLession, Context context) {
-        this.listpackage = listpackage;
+    public LessionAdapter( ArrayList<ListPackageResponse.Packages> listLession, Context context) {
         this.listLession = listLession;
         sql_user = new SQLUser(context);
         user = sql_user.getUser();
@@ -79,8 +69,8 @@ public class PackageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (listpackage != null) {
-            final CategoryResponse.Packages itemPackage = listpackage.get(position);
+        if (listLession != null) {
+             final ListPackageResponse.Packages itemPackage = listLession.get(position);
             final PackageViewHolder myHolder = (PackageViewHolder) holder;
             myHolder.txtv_title.setText(itemPackage.translate_name_text.get(0).text_value + "");
             myHolder.txtv_description.setText(itemPackage.translate_describe_text.get(0).text_value);
@@ -121,7 +111,7 @@ public class PackageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public int getItemCount() {
         if (listLession == null) {
-            return listpackage.size();
+            return listLession.size();
         } else {
             return listLession.size();
         }
@@ -145,14 +135,13 @@ public class PackageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    public void unlock(final CategoryResponse.Packages itemPackage) {
+    public void unlock(final ListPackageResponse.Packages itemPackage ) {
         AlertDialog.Builder exit = new AlertDialog.Builder(context);
         exit.setMessage("Bạn muốn mua package này với " + itemPackage.package_cost + " xu ?");
         exit.setNegativeButton("Có", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                purchasePackage(itemPackage, null);
-
+                purchasePackage(itemPackage);
             }
         });
 
@@ -168,7 +157,7 @@ public class PackageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         dialog.show();
     }
 
-    public void purchasePackage(final CategoryResponse.Packages itemPackage1, final ListPackageResponse.Packages itemPackage2) {
+    public void purchasePackage( final ListPackageResponse.Packages itemPackage2) {
         final ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setCancelable(false);
         progressDialog.show();
@@ -176,9 +165,7 @@ public class PackageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         //send payment to server
         ApiPurchases apiUserAnswer = RestAdapter.getClient().create(ApiPurchases.class);
         Call<Code_StatusModel> payment = null;
-        if (itemPackage1 != null) {
-            payment = apiUserAnswer.addPurchase(itemPackage1.package_id, itemPackage1.item_code);
-        } else if (itemPackage2 != null) {
+        if (itemPackage2 != null) {
             payment = apiUserAnswer.addPurchase(itemPackage2.package_id, itemPackage2.item_code);
         }
         if (payment != null)
@@ -203,7 +190,7 @@ public class PackageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             String token = "Bearer {" + err.getNewToken().toString() + "}";
                             MainActivity.sqlUser.updateToken(token);
                             RestAdapter.MyauthHeaderContent = token;
-                            purchasePackage(itemPackage1, itemPackage2);
+                            purchasePackage(itemPackage2);
 
                         }
                     } else if (code == 401) {
@@ -223,7 +210,7 @@ public class PackageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             });
     }
 
-    public void checkPurchase(final CategoryResponse.Packages itemPackage, final PackageViewHolder myHolder) {
+    public void checkPurchase(final ListPackageResponse.Packages itemPackage, final PackageViewHolder myHolder) {
 
         //check if user charged => next to chapter else =>next to package detail (rate layout)
         ApiPurchases apiPurchases = RestAdapter.getClient().create(ApiPurchases.class);
@@ -276,7 +263,7 @@ public class PackageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         });
     }
 
-    public void showdiaglogRate(final CategoryResponse.Packages itemPackage) {
+    public void showdiaglogRate(final ListPackageResponse.Packages itemPackage) {
         final ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setCancelable(false);
         progressDialog.show();
@@ -374,30 +361,7 @@ public class PackageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             unlock(itemPackage);
                         }
                     });
-                    btn_add.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            AlertDialog.Builder exit = new AlertDialog.Builder(context);
-                            exit.setMessage("Bạn muốn thêm package này vào mylession ? ");
-                            exit.setNegativeButton("Có", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    //
-                                    addLession(itemPackage);
-
-                                }
-                            });
-
-                            exit.setPositiveButton("Không", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    dialogInterface.dismiss();
-                                }
-                            });
-                            AlertDialog dialog = exit.create();
-                            dialog.show();
-                        }
-                    });
+                    btn_add.setVisibility(View.GONE);
                     btn_rate.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -518,41 +482,5 @@ public class PackageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return my_rate[0];
     }
 
-    public void addLession(CategoryResponse.Packages itemPackage) {
-        ApiLession apiLession = RestAdapter.getClient().create(ApiLession.class);
-        Call<Code_StatusModel> resp = apiLession.addMyLession(itemPackage.package_id);
-        resp.enqueue(new Callback<Code_StatusModel>() {
-            @Override
-            public void onResponse(Call<Code_StatusModel> call, Response<Code_StatusModel> response) {
-                int code = response.code();
-                if (code == 200) {
-                    Toast.makeText(context, "add success", Toast.LENGTH_SHORT).show();
-                } else if (code == 400) {
-                    ErroResponse erroResponse = ErrorUtils.parseError(response);
-                    if (erroResponse.getNewToken() != null) {
-                        String token = "Bearer {" + erroResponse.getNewToken().toString() + "}";
-                        MainActivity.sqlUser.updateToken(token);
-                        RestAdapter.MyauthHeaderContent = token;
-
-
-                    } else if (erroResponse.getStatus().equals("lession exist")) {
-                        Toast.makeText(context, "lession exist", Toast.LENGTH_SHORT).show();
-                    }
-                } else if (code == 401) {
-                    MainActivity.sqlUser.deleteUser();
-                    Intent intent = new Intent(context, LoginActivity.class);
-                    intent.putExtra("from", "other");
-                    context.startActivity(intent);
-                    Toast.makeText(context, "het phien lam viec", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Code_StatusModel> call, Throwable t) {
-                Toast.makeText(context, "" + t, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-    }
 
 }

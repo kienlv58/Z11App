@@ -73,7 +73,7 @@ public class Tab3Fragment extends Fragment {
 
 
             listcate = (ArrayList<CategoryResponse.Category>) MainActivity.myBundle.getSerializable("listcate");
-        if (listcate.size() > 0) {
+        if (listcate != null && listcate.size() > 0) {
             for(int i = 0; i <listcate.size();i++){
                 cate_code.add(listcate.get(i).category_code);
             }

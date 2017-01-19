@@ -65,8 +65,10 @@ public class GridViewFolderAdapter extends BaseAdapter {
         if(item == null){
 
         }else {
-            holder.textView.setText(item.translate_name_text.get(0).text_value);
-            holder.imageView.setImageResource(R.drawable.folder_icon);
+            if(item.translate_name_text !=null && item.translate_name_text.size() > 0)
+                holder.textView.setText(item.translate_name_text.get(0).text_value);
+                holder.imageView.setImageResource(R.drawable.folder_icon);
+
         }
         return rowView;
     }

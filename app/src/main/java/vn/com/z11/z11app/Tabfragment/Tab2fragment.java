@@ -24,6 +24,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import vn.com.z11.z11app.Adapter.GridviewAdapter;
+import vn.com.z11.z11app.Adapter.LessionAdapter;
 import vn.com.z11.z11app.Adapter.PackageAdapter;
 import vn.com.z11.z11app.Adapter.RestAdapter;
 import vn.com.z11.z11app.ApiResponseModel.CategoryResponse;
@@ -41,7 +42,7 @@ public class Tab2fragment extends Fragment {
     RecyclerView recyclerView;
     TextView txtv_noti;
     PtrFrameLayout ptrFrameLayout;
-    PackageAdapter packageAdapter;
+    LessionAdapter lessionAdapter;
     ArrayList<ListPackageResponse.Packages> listLession;
 
     public Tab2fragment() {
@@ -135,8 +136,8 @@ public class Tab2fragment extends Fragment {
                 if(code == 200){
                     ListPackageResponse res = response.body();
                     listLession = (ArrayList<ListPackageResponse.Packages>) res.mPackage;
-                    packageAdapter = new PackageAdapter(null,listLession,getActivity());
-                    recyclerView.setAdapter(packageAdapter);
+                    lessionAdapter = new LessionAdapter(listLession,getActivity());
+                    recyclerView.setAdapter(lessionAdapter);
 
                 }else if(code == 400 || code == 404){
                     ErroResponse erroResponse = ErrorUtils.parseError(response);
