@@ -10,6 +10,6 @@ import vn.com.z11.z11app.ApiResponseModel.FolderResponse;
  * Created by kienlv58 on 12/29/16.
  */
 public interface ApiChapter {
-    @GET("chapter/{chapter_id}")
+    @GET("getChapterToAnswer/{chapter_id}")
     Call<ChapterResponse> getChapter(@Path("chapter_id") int chapter_id);
 }
