@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity
             item1.setIcon(R.drawable.login_draw);
             item1.setTitle("Login");
         } else {
+            if(user.getProfile().getImage() != null)
             Picasso.with(MainActivity.this)
                     .load(user.getProfile().getImage().toString())
                     .placeholder(R.drawable.loading)

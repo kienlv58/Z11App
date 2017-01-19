@@ -23,7 +23,6 @@ import vn.com.z11.z11app.R;
 public class ChapterAdapter extends RecyclerView.Adapter {
     ArrayList<PackageResponse.Chapters> list_chapter;
     Context context;
-    Context context2;
 
     public ChapterAdapter(ArrayList<PackageResponse.Chapters> list_chapter, Context context) {
         this.list_chapter = list_chapter;
@@ -58,6 +57,15 @@ public class ChapterAdapter extends RecyclerView.Adapter {
                 Intent toGroup = new Intent(holder.itemView.getContext(), GroupQuestionActivity.class);
                 toGroup.putExtra("chapter_id",chapter.chapter_id);
                 toGroup.putExtra("from","test");
+                holder.itemView.getContext().startActivity(toGroup);
+            }
+        });
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent toGroup = new Intent(holder.itemView.getContext(), GroupQuestionActivity.class);
+                toGroup.putExtra("chapter_id",chapter.chapter_id);
+                toGroup.putExtra("from","train");
                 holder.itemView.getContext().startActivity(toGroup);
             }
         });

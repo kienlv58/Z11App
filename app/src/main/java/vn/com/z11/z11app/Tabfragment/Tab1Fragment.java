@@ -109,7 +109,7 @@ public class Tab1Fragment extends Fragment {
             public void onResponse(Call<CategoryResponse> call, Response<CategoryResponse> response) {
                 categoryResponse = response.body();
                 ArrayList<CategoryResponse.Category> listCate = (ArrayList<CategoryResponse.Category>) categoryResponse.list_category;
-                if(listCate.size() > 0){
+                if(listCate !=  null &&listCate.size() > 0){
                     Bundle bundle = new Bundle();
                     MainActivity.myBundle.putSerializable("listcate",listCate);
 

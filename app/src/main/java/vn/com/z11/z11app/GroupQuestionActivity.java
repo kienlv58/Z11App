@@ -122,7 +122,7 @@ public class GroupQuestionActivity extends AppCompatActivity implements onEventL
     @Override
     public void onBackPressed() {
         if (from.equals("train")) {
-            if(listGroupQS == null){
+            if(listGroupQS == null || listGroupQS.size() == 0){
                 super .onBackPressed();
                 return;
             }
@@ -165,7 +165,7 @@ public class GroupQuestionActivity extends AppCompatActivity implements onEventL
             alertDialog.show();
             overridePendingTransition(R.anim.fade_in_left, R.anim.fade_out_left);
         } else {
-            if(listGroupQS == null){
+            if(listGroupQS == null || listGroupQS.size() == 0){
                 super .onBackPressed();
                 return;
             }

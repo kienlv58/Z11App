@@ -3,16 +3,21 @@
     xmlns:ard_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="2dp"
+    xmlns:card_view="http://schemas.android.com/tools"
+    card_view:cardPreventCornerOverlap="false"
+    card_view:cardUseCompatPadding="true"
+    android:layout_margin="5dp"
     android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    ard_view:cardCornerRadius="5dp">
+    ard_view:cardCornerRadius="5dp"
+    >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#95dcb5"
         android:maxHeight="70dp"
         android:minHeight="70dp"
+
         android:orientation="horizontal">
 
 
@@ -69,5 +74,6 @@
         </RelativeLayout>
 
     </LinearLayout>
+
 
 </android.support.v7.widget.CardView>
